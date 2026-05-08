@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="cdt.managedbuild.toolchain.sdcc.exe.release.2091116254.1713687066">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.sdcc.exe.release.2091116254.1713687066" moduleId="org.eclipse.cdt.core.settings" name="release">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.MakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.autotools.core.ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="ihx" artifactName="${ProjName}" buildProperties="" description="" id="cdt.managedbuild.toolchain.sdcc.exe.release.2091116254.1713687066" name="release" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.dockerdpath=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=" parent="org.eclipse.cdt.build.core.emptycfg" postbuildStep="sdobjcopy -I ihex -O binary ${ProjName}.ihx ${ProjName}.bin; stat ${ProjName}.bin;">
+					<folderInfo id="cdt.managedbuild.toolchain.sdcc.exe.release.2091116254.1713687066." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.sdcc.exe.release.644162194" name="SDCC Tool Chain" superClass="cdt.managedbuild.toolchain.sdcc.exe.release">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.sdcc.platform.exe.release.1743504503" name="Release Platform" osList="solaris,linux,hpux,aix,qnx,win32" superClass="cdt.managedbuild.target.sdcc.platform.exe.release"/>
+							<builder arguments="-j8" buildPath="${workspace_loc:/tx_demo}/Release" enableCleanBuild="true" id="cdt.managedbuild.target.sdcc.builder.exe.release.44406467" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Sdcc Make" superClass="cdt.managedbuild.target.sdcc.builder.exe.release"/>
+							<tool command="sdcc -c  --stack-auto" id="cdt.managedbuild.tool.sdcc.c.compiler.exe.release.1157316042" name="SDCC Compiler" superClass="cdt.managedbuild.tool.sdcc.c.compiler.exe.release">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="sdcc.c.compiler.option.include.paths.209025480" name="Include paths (-I)" superClass="sdcc.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${eclipse_home}/../SDCC-4.2.6/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${eclipse_home}/../SDCC-4.2.6/include/mcs51&quot;"/>
+								</option>
+								<option id="sdcc.c.compiler.category.other.memorymodel.361443175" name="Memory Model" superClass="sdcc.c.compiler.category.other.memorymodel" value="sdcc.c.compiler.category.other.memorymodel.large" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.sdcc.c.compiler.input.1320510105" superClass="cdt.managedbuild.tool.sdcc.c.compiler.input"/>
+							</tool>
+							<tool command="sdcc --stack-auto --iram-size 256 --code-loc 0x3000 --code-size 0x1000 --xram-loc 0x5140 --xram-size 0x6C0" id="cdt.managedbuild.tool.sdcc.c.linker.exe.release.912264325" name="SDCC Linker" superClass="cdt.managedbuild.tool.sdcc.c.linker.exe.release">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="sdcc.c.link.option.paths.1468068587" name="Library search path (-L)" superClass="sdcc.c.link.option.paths" valueType="stringList">
+									<listOptionValue builtIn="false" value="&quot;${eclipse_home}/../SDCC-4.2.6\lib\large-stack-auto&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.sdcc.c.linker.input.1141283036" superClass="cdt.managedbuild.tool.sdcc.c.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_RELS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.sdcc.assembler.exe.release.405021620" name="SDCC Assembler" superClass="cdt.managedbuild.tool.sdcc.assembler.exe.release">
+								<inputType id="cdt.managedbuild.tool.sdcc.assembler.input.1106316330" superClass="cdt.managedbuild.tool.sdcc.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="tx_demo.null.54739479" name="tx_demo"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="release"/>
+		<configuration configurationName="tx_demo"/>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/tx_demo"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+</cproject>
