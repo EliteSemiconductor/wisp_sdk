@@ -22,19 +22,8 @@
 #define MODULE_IDX_2        3
 #define MODULE_IDX_4        4
 
-typedef enum {
-    POWER_0DBM = 0,
-    POWER_1DBM,
-    POWER_3DBM,
-    POWER_4DBM,
-    POWER_5DBM,
-    POWER_6DBM,
-    POWER_7DBM,
-    POWER_8DBM,
-    POWER_9DBM,
-    POWER_10DBM,
-    POWER_MAXIMUM,
-} E_POWER_LEVEL;
+#define POWER_4DBM          0
+#define POWER_10DBM         1
 
 #define TX_NONE_BLOCKED     0
 #define TX_BLOCKED          1
@@ -42,10 +31,10 @@ typedef enum {
 /*****************************************************************************
  ************************ CONFIG TRANSMIT PARAMETER **************************
  *****************************************************************************/
-#define TX_CONFIG_FREQENCE      IF433MHZ
+#define TX_CONFIG_FREQENCY      IF433MHZ
 #define TX_CONFIG_MOD_TYPE      MODE_FSK
 #define TX_CONFIG_DATA_RATE     DR_100K
-#define TX_CONFIG_POWER         POWER_10DBM
+#define TX_CONFIG_POWER         POWER_4DBM
 #define TX_CONFIG_MOD_IDX       MODULE_IDX_0P5
 //#define TX_ENHANCED_API
 
@@ -103,4 +92,8 @@ typedef enum {
     TX_TIMING_MAXIMUNN,
 } E_TX_TIMING;
 #endif
+
+void _tx_init_fsk(const uint8_t *rf_tx_table, uint8_t power);
+void _turnoff_fs_tpm_en(void);
+void _patch_power(uint8_t power);
 #endif /* __TRANSFER_H__ */

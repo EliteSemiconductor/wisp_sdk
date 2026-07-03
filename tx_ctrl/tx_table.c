@@ -1,9 +1,12 @@
 #include "tonki_soc.h"
 #include "transfer.h"
 
+//============================================================================//
+// OOK TX PARAMETERs
+//============================================================================//
 #if TX_CONFIG_MOD_TYPE == MODE_OOK
 const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
-#if TX_CONFIG_FREQENCE == IF433MHZ
+#if TX_CONFIG_FREQENCY == IF433MHZ
     #if TX_CONFIG_DATA_RATE == DR_10K
         0x00,0x06,0x02,0x00,0x00,0x04,0xC8,0x00,0x10,0x0A  //433M_10K
     #elif TX_CONFIG_DATA_RATE == DR_50K
@@ -11,7 +14,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
     #elif TX_CONFIG_DATA_RATE == DR_100K
         0x00,0x06,0x02,0x00,0x00,0x04,0x14,0x00,0x01,0x10  //433M_100K
     #endif
-#elif TX_CONFIG_FREQENCE == IF868MHZ
+#elif TX_CONFIG_FREQENCY == IF868MHZ
     #if TX_CONFIG_DATA_RATE == DR_10K
         0x01,0x06,0x02,0x00,0x00,0x08,0xC8,0x00,0x10,0x0A  //868M_10K
     #elif TX_CONFIG_DATA_RATE == DR_50K
@@ -19,7 +22,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
     #elif TX_CONFIG_DATA_RATE == DR_100K
         0x01,0x06,0x02,0x00,0x00,0x08,0x14,0x00,0x01,0x10  //868M_100K
     #endif
-#elif TX_CONFIG_FREQENCE == IF915MHZ
+#elif TX_CONFIG_FREQENCY == IF915MHZ
     #if TX_CONFIG_DATA_RATE == DR_10K
         0x01,0x01,0x03,0x00,0x00,0x06,0xC8,0x00,0x10,0x0A  //915M_10K
     #elif TX_CONFIG_DATA_RATE == DR_50K
@@ -40,9 +43,12 @@ const uint8_t rf_tx_ramp_table[] = {
     #endif
 };
 #else
+//============================================================================//
+// FSK TX PARAMETERs
+//============================================================================//
 const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
 #if TX_CONFIG_MOD_IDX == MODULE_IDX_0P5
-    #if TX_CONFIG_FREQENCE == IF433MHZ
+    #if TX_CONFIG_FREQENCY == IF433MHZ
         #if TX_CONFIG_DATA_RATE == DR_10K
             0x00, 0x06, 0x02, 0x00, 0x00, 0x04, 0x16, 0x52, 0x80, 0x00, 0x16, 0xAE, 0x7F, 0x00, 0xC8, 0x00    //433M_10K_M0.5
         #elif TX_CONFIG_DATA_RATE == DR_12P5K
@@ -58,7 +64,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
         #elif TX_CONFIG_DATA_RATE == DR_500K
             0x00, 0x06, 0x02, 0x00, 0x00, 0x04, 0x16, 0x00, 0x90, 0x00, 0x16, 0x00, 0x70, 0x00, 0x04, 0x00    //433M_500K_M0.5
         #endif
-    #elif TX_CONFIG_FREQENCE == IF868MHZ
+    #elif TX_CONFIG_FREQENCY == IF868MHZ
         #if TX_CONFIG_DATA_RATE == DR_10K
             0x01, 0x06, 0x02, 0x00, 0x00, 0x08, 0x16, 0x29, 0x00, 0x01, 0x16, 0xD7, 0xFF, 0x00, 0xC8, 0x00    //868M_10K_M0.5
         #elif TX_CONFIG_DATA_RATE == DR_12P5K
@@ -74,7 +80,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
         #elif TX_CONFIG_DATA_RATE == DR_500K
             0x01, 0x06, 0x02, 0x00, 0x00, 0x08, 0x16, 0x00, 0x08, 0x01, 0x16, 0x00, 0xF8, 0x00, 0x04, 0x00    //868M_500K_M0.5
         #endif
-    #elif TX_CONFIG_FREQENCE == IF915MHZ
+    #elif TX_CONFIG_FREQENCY == IF915MHZ
         #if TX_CONFIG_DATA_RATE == DR_10K
             0x01, 0x01, 0x03, 0x00, 0x00, 0x06, 0x19, 0x29, 0xC0, 0x00, 0x19, 0xD7, 0xBF, 0x00, 0xC8, 0x00    //915M_10K_M0.5
         #elif TX_CONFIG_DATA_RATE == DR_12P5K
@@ -92,7 +98,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
         #endif
     #endif
 #elif TX_CONFIG_MOD_IDX == MODULE_IDX_1
-    #if TX_CONFIG_FREQENCE == IF433MHZ
+    #if TX_CONFIG_FREQENCY == IF433MHZ
         #if TX_CONFIG_DATA_RATE == DR_10K
             0x00, 0x06, 0x02, 0x00, 0x00, 0x04, 0x16, 0xA4, 0x80, 0x00, 0x16, 0x5C, 0x7F, 0x00, 0xC8, 0x00    //433M_10K_M1
         #elif TX_CONFIG_DATA_RATE == DR_12P5K
@@ -108,7 +114,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
         #elif TX_CONFIG_DATA_RATE == DR_500K
             0x00, 0x06, 0x02, 0x00, 0x00, 0x04, 0x16, 0x00, 0xA0, 0x00, 0x16, 0x00, 0x60, 0x00, 0x04, 0x00    //433M_500K_M1
         #endif
-    #elif TX_CONFIG_FREQENCE == IF868MHZ
+    #elif TX_CONFIG_FREQENCY == IF868MHZ
         #if TX_CONFIG_DATA_RATE == DR_10K
             0x01, 0x06, 0x02, 0x00, 0x00, 0x08, 0x16, 0x52, 0x00, 0x01, 0x16, 0xAE, 0xFF, 0x00, 0xC8, 0x00    //868M_10K_M1
         #elif TX_CONFIG_DATA_RATE == DR_12P5K
@@ -124,7 +130,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
         #elif TX_CONFIG_DATA_RATE == DR_500K
             0x01, 0x06, 0x02, 0x00, 0x00, 0x08, 0x16, 0x00, 0x10, 0x01, 0x16, 0x00, 0xF0, 0x00, 0x04, 0x00    //868M_500K_M1
         #endif
-    #elif TX_CONFIG_FREQENCE == IF915MHZ
+    #elif TX_CONFIG_FREQENCY == IF915MHZ
         #if TX_CONFIG_DATA_RATE == DR_10K
             0x01, 0x01, 0x03, 0x00, 0x00, 0x06, 0x19, 0x52, 0xC0, 0x00, 0x19, 0xAE, 0xBF, 0x00, 0xC8, 0x00    //915M_10K_M1
         #elif TX_CONFIG_DATA_RATE == DR_12P5K
@@ -142,7 +148,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
         #endif
     #endif
 #elif TX_CONFIG_MOD_IDX == MODULE_IDX_2
-    #if TX_CONFIG_FREQENCE == IF433MHZ
+    #if TX_CONFIG_FREQENCY == IF433MHZ
         #if TX_CONFIG_DATA_RATE == DR_10K
             0x00, 0x06, 0x02, 0x00, 0x00, 0x04, 0x16, 0x48, 0x81, 0x00, 0x16, 0xB8, 0x7E, 0x00, 0xC8, 0x00    //433M_10K_M2
         #elif TX_CONFIG_DATA_RATE == DR_12P5K
@@ -158,7 +164,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
         #elif TX_CONFIG_DATA_RATE == DR_500K
             0x00, 0x06, 0x02, 0x00, 0x00, 0x04, 0x16, 0x00, 0xC0, 0x00, 0x16, 0x00, 0x40, 0x00, 0x04, 0x00    //433M_500K_M2
         #endif
-    #elif TX_CONFIG_FREQENCE == IF868MHZ
+    #elif TX_CONFIG_FREQENCY == IF868MHZ
         #if TX_CONFIG_DATA_RATE == DR_10K
             0x01, 0x06, 0x02, 0x00, 0x00, 0x08, 0x16, 0xA4, 0x00, 0x01, 0x16, 0x5C, 0xFF, 0x00, 0xC8, 0x00    //868M_10K_M2
         #elif TX_CONFIG_DATA_RATE == DR_12P5K
@@ -174,7 +180,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
         #elif TX_CONFIG_DATA_RATE == DR_500K
             0x01, 0x06, 0x02, 0x00, 0x00, 0x08, 0x16, 0x00, 0x20, 0x01, 0x16, 0x00, 0xE0, 0x00, 0x04, 0x00    //868M_500K_M2
         #endif
-    #elif TX_CONFIG_FREQENCE == IF915MHZ
+    #elif TX_CONFIG_FREQENCY == IF915MHZ
         #if TX_CONFIG_DATA_RATE == DR_10K
             0x01, 0x01, 0x03, 0x00, 0x00, 0x06, 0x19, 0xA4, 0xC0, 0x00, 0x19, 0x5C, 0xBF, 0x00, 0xC8, 0x00    //915M_10K_M2
         #elif TX_CONFIG_DATA_RATE == DR_12P5K
@@ -192,7 +198,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
         #endif
     #endif
 #elif TX_CONFIG_MOD_IDX == MODULE_IDX_4
-    #if TX_CONFIG_FREQENCE == IF433MHZ
+    #if TX_CONFIG_FREQENCY == IF433MHZ
         #if TX_CONFIG_DATA_RATE == DR_10K
             0x00, 0x06, 0x02, 0x00, 0x00, 0x04, 0x16, 0x8F, 0x82, 0x00, 0x16, 0x71, 0x7D, 0x00, 0xC8, 0x00    //433M_10K_M4
         #elif TX_CONFIG_DATA_RATE == DR_12P5K
@@ -208,7 +214,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
         #elif TX_CONFIG_DATA_RATE == DR_500K
             0x00, 0x06, 0x02, 0x00, 0x00, 0x04, 0x16, 0x00, 0x00, 0x01, 0x16, 0x00, 0x00, 0x00, 0x04, 0x00    //433M_500K_M4
         #endif
-    #elif TX_CONFIG_FREQENCE == IF868MHZ
+    #elif TX_CONFIG_FREQENCY == IF868MHZ
         #if TX_CONFIG_DATA_RATE == DR_10K
             0x01, 0x06, 0x02, 0x00, 0x00, 0x08, 0x16, 0x48, 0x01, 0x01, 0x16, 0xB8, 0xFE, 0x00, 0xC8, 0x00    //868M_10K_M4
         #elif TX_CONFIG_DATA_RATE == DR_12P5K
@@ -224,7 +230,7 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
         #elif TX_CONFIG_DATA_RATE == DR_500K
             0x01, 0x06, 0x02, 0x00, 0x00, 0x08, 0x16, 0x00, 0x40, 0x01, 0x16, 0x00, 0xC0, 0x00, 0x04, 0x00    //868M_500K_M4
         #endif
-    #elif TX_CONFIG_FREQENCE == IF915MHZ
+    #elif TX_CONFIG_FREQENCY == IF915MHZ
         #if TX_CONFIG_DATA_RATE == DR_10K
             0x01, 0x01, 0x03, 0x00, 0x00, 0x06, 0x19, 0x48, 0xC1, 0x00, 0x19, 0xB8, 0xBE, 0x00, 0xC8, 0x00    //915M_10K_M4
         #elif TX_CONFIG_DATA_RATE == DR_12P5K
@@ -244,10 +250,23 @@ const uint8_t rf_tx_table[TX_TIMING_MAXIMUNN] = {
 #endif
 };
 
-const uint8_t power_tbl[POWER_MAXIMUM] = {
-    2, 5, 8, 10, 11, 12, 13, 14, 15, 17
+//============================================================================//
+// TX PWER PARAMETERs
+//============================================================================//
+#if TX_CONFIG_FREQENCY == IF433MHZ
+const uint8_t power_tbl[] = {
+    10, 17
 };
+#else
+const uint8_t power_tbl[] = {
+    6, 27
+};
+#endif
 
+//============================================================================//
+// TX PWER PARAMETERs
+//============================================================================//
+#ifdef TX_ENHANCED_API
 const uint8_t rf_tx_bit_rate_table[3] = {
     #if TX_CONFIG_DATA_RATE == DR_10K
         0x40, 0x06, 0x00,
@@ -267,5 +286,7 @@ const uint8_t rf_tx_bit_rate_table[3] = {
         0x20, 0x00, 0x00,
     #endif
 };
+#endif
+
 #endif
 

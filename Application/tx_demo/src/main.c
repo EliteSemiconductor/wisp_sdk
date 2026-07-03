@@ -8,17 +8,13 @@
 #define TX_DATA_LEN         0x10
 uint8_t tx_data_buf[TX_DATA_LEN];
 
-#if TX_CONFIG_MOD_TYPE == MODE_OOK
+#if (TX_CONFIG_MOD_TYPE == MODE_OOK)
 extern const uint8_t rf_tx_table[];
 extern const uint8_t rf_tx_ramp_table[];
 #else
 extern const uint8_t rf_tx_table[];
 extern const uint8_t power_tbl[];
-extern const uint8_t rf_tx_bit_rate_table[];
 #endif
-
-extern void patch_4dBm(void);
-extern void patch_10dBm(void);
 
 void mac_tx_callback(void)
 {
@@ -50,18 +46,10 @@ void main (void)
     wisp_api_mtp_init();
     wisp_api_mtp_read(0, tx_data_buf, TX_DATA_LEN);
 
-#if TX_CONFIG_MOD_TYPE == MODE_OOK
-    // NOTE: Currently supports only 4dBm and 10dBm patch functions
-    //       Must be called before the init function
-    wisp_api_mac_register_patch((MAC_TX_PATCH_T)patch_10dBm);
-
+#if (TX_CONFIG_MOD_TYPE == MODE_OOK)
     //- Initial TX setting
     wisp_api_tx_init_ook(rf_tx_table, rf_tx_ramp_table);
 #else
-    // NOTE: Currently supports only 4dBm and 10dBm patch functions
-    //       Must be called before the init function
-    wisp_api_mac_register_patch((MAC_TX_PATCH_T)patch_10dBm);
-
     //- Initial TX setting
     wisp_api_tx_init_fsk(rf_tx_table, power_tbl[TX_CONFIG_POWER]);
 #endif
@@ -75,6 +63,9 @@ void main (void)
 
     //- [Option], Enable packet header 2 byte length, include CRC length
     wisp_api_tx_enable_phr(2, 1);
+
+    //- [Option], Enable Data payload and header bit inversion
+    wisp_api_set_tx_misc_reverse(1 , 1);
 
     //- [Option], Enable CRC 16bits, CRC exclude header
     wisp_api_tx_enable_crc(16, 0);

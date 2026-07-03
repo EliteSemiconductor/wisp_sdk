@@ -1,3 +1,11 @@
+/******************************************************************************
+ * WARNING: HARDWARE-SPECIFIC IMPLEMENTATION
+ * * The code below performs direct hardware-level operations. Any unauthorized
+ * or incorrect modifications may result in critical system failure or
+ * hardware damage.
+ * * DO NOT MODIFY THIS FILE.
+ ******************************************************************************/
+
 #include "tonki_soc.h"
 #include "common.h"
 #include "sys_ctrl.h"
@@ -8,40 +16,89 @@
 #include "ana_aon.h"
 #include "api_translate.h"
 #include "mtp_ctrl.h"
+#include "mac.h"
 
 #define VERSION_MAJOR   1
-#define VERSION_MINOR   2
+#define VERSION_MINOR   3
 #define VERSION_PATCH   0
+
+#define STRINGIFY(x)       #x
+#define TOSTRING(x)        STRINGIFY(x)
+
+#define SDK_VERSION_STR    "SDK Ver: " TOSTRING(VERSION_MAJOR) "." \
+                           TOSTRING(VERSION_MINOR) "." \
+                           TOSTRING(VERSION_PATCH) "\n"
 
 #define VERSION ((VERSION_MAJOR << 13) | (VERSION_MINOR << 8) | (VERSION_PATCH))
 
-void patch_4dBm(void)
+void _patch_power(uint8_t power)
 {
-    ANCTL->PA_REG.PA_CONFIG_0 = 0x03;
-    ANCTL->PA_REG.PA_CONFIG_1 = 0xCA;
-    ANCTL->PA_REG.PA_CONFIG_2 = 0x09;
-    ANCTL->PA_REG.PA_TX_SUBG_RESERVED = 0;
-    ANCTL->SX_REG.SX_CONFIG_9 = 0;
+#if (TX_CONFIG_FREQENCY == IF433MHZ)
+    #if (TX_CONFIG_POWER == POWER_4DBM)
+        #if (TX_CONFIG_MOD_TYPE == MODE_FSK)
+            ANCTL->PA_REG.PA_CONFIG_0 = 0x06;
+        #else   //OOK
+            ANCTL->PA_REG.PA_CONFIG_0 = 0x02;
+        #endif
+            ANCTL->PA_REG.PA_CONFIG_1_b.PA_PWR = power;
+            ANCTL->PA_REG.PA_CONFIG_1_b.PA_DUTY_SEL = 6;
+            ANCTL->PA_REG.PA_CONFIG_2 = 0x09;
+            ANCTL->SX_REG.SX_CONFIG_9 = 0;
 
-    ANCTL->ANCTL_REG.ANCTL_CONFIG_7_1_b.ANCTL_PWR_CONST = 10;
-    ANCTL->ANCTL_REG.ANCTL_FS_REG0_0 = 0;
+            ANCTL->ANCTL_REG.ANCTL_CONFIG_7_1_b.ANCTL_PWR_CONST = power;
+            ANCTL->ANCTL_REG.ANCTL_FS_REG0_0 = 0;
+    #else   //10DBM
+        #if (TX_CONFIG_MOD_TYPE == MODE_FSK)
+            ANCTL->PA_REG.PA_CONFIG_0 = 0x66;
+        #else   //OOK
+            ANCTL->PA_REG.PA_CONFIG_0 = 0x62;
+        #endif
+            ANCTL->PA_REG.PA_CONFIG_1_b.PA_PWR = power;
+            ANCTL->PA_REG.PA_CONFIG_1_b.PA_DUTY_SEL = 6;
+            ANCTL->PA_REG.PA_CONFIG_2 = 0x27;
+            ANCTL->SX_REG.SX_CONFIG_9 = 0;
+
+            ANCTL->ANCTL_REG.ANCTL_CONFIG_7_1_b.ANCTL_PWR_CONST = power;
+            ANCTL->ANCTL_REG.ANCTL_FS_REG0_0 = 0;
+    #endif
+#else   //IF868MHZ/IF915MHZ
+    #if (TX_CONFIG_POWER == POWER_4DBM)
+        #if (TX_CONFIG_MOD_TYPE == MODE_FSK)
+            ANCTL->PA_REG.PA_CONFIG_0 = 0x06;
+        #else   //OOK
+            ANCTL->PA_REG.PA_CONFIG_0 = 0x02;
+        #endif
+            ANCTL->PA_REG.PA_CONFIG_1_b.PA_PWR = power;
+            ANCTL->PA_REG.PA_CONFIG_1_b.PA_DUTY_SEL = 2;
+            ANCTL->PA_REG.PA_CONFIG_2 = 0x42;
+            ANCTL->SX_REG.SX_CONFIG_9 = 0x0C;
+
+            ANCTL->ANCTL_REG.ANCTL_CONFIG_7_1_b.ANCTL_PWR_CONST = power;
+            ANCTL->ANCTL_REG.ANCTL_FS_REG0_0 = 0x0C;
+    #else   //10DBM
+        #if (TX_CONFIG_MOD_TYPE == MODE_FSK)
+            ANCTL->PA_REG.PA_CONFIG_0 = 0x06;
+        #else   //OOK
+            ANCTL->PA_REG.PA_CONFIG_0 = 0x02;
+        #endif
+            ANCTL->PA_REG.PA_CONFIG_1_b.PA_PWR = power;
+            ANCTL->PA_REG.PA_CONFIG_1_b.PA_DUTY_SEL = 2;
+            ANCTL->PA_REG.PA_CONFIG_2 = 0x42;
+            ANCTL->SX_REG.SX_CONFIG_9 = 0x0C;
+
+            ANCTL->ANCTL_REG.ANCTL_CONFIG_7_1_b.ANCTL_PWR_CONST = power;
+            ANCTL->ANCTL_REG.ANCTL_FS_REG0_0 = 0x0C;
+    #endif
+#endif
 }
 
-void patch_10dBm(void)
-{
-    ANCTL->PA_REG.PA_CONFIG_0 = 0x63;
-    ANCTL->PA_REG.PA_CONFIG_1 = 0xD1;
-    ANCTL->PA_REG.PA_CONFIG_2 = 0x27;
-    ANCTL->PA_REG.PA_TX_SUBG_RESERVED = 0;
-    ANCTL->SX_REG.SX_CONFIG_9 = 0;
-
-    ANCTL->ANCTL_REG.ANCTL_CONFIG_7_1_b.ANCTL_PWR_CONST = 17;
-    ANCTL->ANCTL_REG.ANCTL_FS_REG0_0 = 0;
-}
 
 void wisp_api_system_pd(void)
 {
-    ANA_AON->BIAS_REG.BIAS_CONFIG1_b.BIAS_SYSPWR_EN = 0;
+    while(1) {
+        ANA_AON->BIAS_REG.BIAS_CONFIG1_b.BIAS_SYSPWR_EN = 0;
+        _nop_();
+    }
 }
 
 void wisp_api_get_sdk_version(uint16_t *version)
@@ -49,9 +106,15 @@ void wisp_api_get_sdk_version(uint16_t *version)
     *version = VERSION;
 }
 
+void wisp_api_set_tx_misc_reverse(uint8_t data_revs_flag, uint8_t hdr_revs_flag)
+{
+    MAC->MAC_MISC_REG_B0_b.DMA_TX_BIT_REVERSE = data_revs_flag;
+    MAC->MAC_TXPHR_REG_B0_b.MAC_TX_PHRINV = hdr_revs_flag;
+}
+
 const char *wisp_api_get_sdk_string(void)
 {
-    return "SDK Ver: 1.2.0\n";
+    return SDK_VERSION_STR;
 }
 
 #ifdef MTP_QUICK_WRITE

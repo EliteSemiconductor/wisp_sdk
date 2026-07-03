@@ -434,6 +434,18 @@ void wisp_api_system_pd(void);
 #define wisp_api_tx_enable_crc MAC_ENABLE_CRC_ADDR
 
 /**
+ * @brief  Enable and configure bit reversal for TX.
+ *
+ * This function enables bit-order reversal for MAC transmission. It allows
+ * independent configuration of the data payload and the protocol header to
+ * meet specific PHY requirements.
+ *
+ * @param[in] data_revs_flag  1 to enable bit reversal for the data payload, 0 to disable.
+ * @param[in] hdr_revs_flag   1 to enable bit reversal for the frame header, 0 to disable.
+ */
+void wisp_api_set_tx_misc_reverse(uint8_t data_revs_flag, uint8_t hdr_revs_flag);
+
+/**
  * @brief  Configure CRC polynomial and initial seed values.
  *
  * This function sets the custom CRC polynomial and seed for the MAC
@@ -468,7 +480,8 @@ void wisp_api_system_pd(void);
  * This function sets up the initial transmit configuration parameters
  * for the WISP module.
  */
-#define wisp_api_tx_init_fsk MAC_TX_INIT_FSK_ADDR
+#define wisp_api_tx_init_fsk_1 MAC_TX_INIT_FSK_ADDR
+void wisp_api_tx_init_fsk(const uint8_t *rf_tx_table, uint8_t power);
 
 /**
  * @brief Initialize the TX configuration for WISP.
@@ -476,7 +489,8 @@ void wisp_api_system_pd(void);
  * This function sets up the initial transmit configuration parameters
  * for the WISP module.
  */
-#define wisp_api_tx_init_ook MAC_TX_INIT_OOK_ADDR
+#define wisp_api_tx_init_ook_1 MAC_TX_INIT_OOK_ADDR
+void wisp_api_tx_init_ook(const uint8_t *rf_tx_table, const uint8_t *rf_tx_ramp_table);
 
 /**
  * @brief Start a WISP transmission.
@@ -491,7 +505,8 @@ void wisp_api_system_pd(void);
  *                       - 0: Non-blocking (return immediately)
  *                       - 1: Blocking (wait until transmission finishes)
  */
-#define wisp_api_tx_start MAC_TX_START_ADDR
+#define wisp_api_tx_start_1 MAC_TX_START_ADDR
+void wisp_api_tx_start(uint16_t tx_len, const uint8_t *tx_data, uint8_t block_flag);
 
 /**
  * @brief Restart the WISP TX (transmission).
@@ -504,7 +519,8 @@ void wisp_api_system_pd(void);
  *       before calling this function. Should be called in mac callback
  *       function.
  */
-#define wisp_api_tx_restart MAC_TX_RESTART_ADDR
+#define wisp_api_tx_restart_1 MAC_TX_RESTART_ADDR
+void wisp_api_tx_restart(void);
 
 /**
  * int wisp_api_mac_register_cb(void (*cb)(void))
