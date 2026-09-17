@@ -11,6 +11,8 @@
 #include "api.h"
 
 #if (TX_CONFIG_MOD_TYPE == MODE_FSK)
+uint8_t tx_block_flag = 0;
+
 void _turnoff_fs_tpm_en(void)
 {
     while (ANCTL->SX_REG.SX_CONFIG_30_b.FS_TPM_EN == 0) {
@@ -48,7 +50,10 @@ void wisp_api_tx_start(uint16_t tx_len, const uint8_t *tx_data, uint8_t block_fl
 {
     wisp_api_tx_start_1(tx_len, tx_data, block_flag);
 #if (TX_CONFIG_DATA_RATE <= DR_333K && TX_CONFIG_MOD_TYPE == MODE_FSK)
-    _turnoff_fs_tpm_en();
+    tx_block_flag = block_flag;
+    if (tx_block_flag == TX_NONE_BLOCKED) {
+        _turnoff_fs_tpm_en();
+    }
 #endif
 }
 
@@ -56,18 +61,23 @@ void wisp_api_tx_restart(void)
 {
     wisp_api_tx_restart_1();
 #if (TX_CONFIG_DATA_RATE <= DR_333K && TX_CONFIG_MOD_TYPE == MODE_FSK)
-    _turnoff_fs_tpm_en();
+    if (tx_block_flag == TX_NONE_BLOCKED) {
+        _turnoff_fs_tpm_en();
+    }
 #endif
 }
 
 #if (TX_CONFIG_MOD_TYPE == MODE_FSK)
 void _tx_init_fsk(const uint8_t *rf_tx_table, uint8_t power)
 {
+    //- Disable Tx first
+    ANCTL->ANCTL_REG.ANCTL_CONFIG_1_0_b.ANCTL_TX_EN = 0;
+
     //- Time setting
     ANCTL->ANCTL_REG.ANCTL_CONFIG_6_0 = 0x05;
     ANCTL->ANCTL_REG.ANCTL_FS_REG0_1 = 7;
 
-    //- Setup TX freq/mod
+    //- Disable TX TPM calibration
     ANCTL->ANCTL_REG.ANCTL_CONFIG_1_2_b.ANCTL_TPM_CAL_EN  = 0;
 
     //- Disable FS write back
@@ -102,10 +112,10 @@ void _tx_init_fsk(const uint8_t *rf_tx_table, uint8_t power)
     ANCTL->SX_REG.SX_CONFIG_19_b.FS_TPMCAL_DIV_INT_HB = rf_tx_table[TX_TIMING_HB_DIVINT_IDX];
     ANCTL->SX_REG.FS_TPMCAL_DIV_FRAC_HB_0 = rf_tx_table[TX_TIMING_HB_DIVFRAC0_IDX];
     ANCTL->SX_REG.FS_TPMCAL_DIV_FRAC_HB_1 = rf_tx_table[TX_TIMING_HB_DIVFRAC1_IDX];
-    ANCTL->SX_REG.FS_TPMCAL_DIV_FRAC_HB_2 = rf_tx_table[TX_TIMING_HB_DIVFRAC2_IDX];
+    ANCTL->SX_REG.SX_CONFIG_16_b.FS_TPMCAL_DIV_FRAC_HB_2 = rf_tx_table[TX_TIMING_HB_DIVFRAC2_IDX];
 
     //- LB Frequency
-    ANCTL->SX_REG.FS_TPMCAL_DIV_INT_LB = rf_tx_table[TX_TIMING_LB_DIVINT_IDX];
+    ANCTL->SX_REG.SX_CONFIG_20_b.FS_TPMCAL_DIV_INT_LB = rf_tx_table[TX_TIMING_LB_DIVINT_IDX];
     ANCTL->SX_REG.FS_TPMCAL_DIV_FRAC_LB_0 = rf_tx_table[TX_TIMING_LB_DIVFRAC0_IDX];
     ANCTL->SX_REG.FS_TPMCAL_DIV_FRAC_LB_1 = rf_tx_table[TX_TIMING_LB_DIVFRAC1_IDX];
     ANCTL->SX_REG.SX_CONFIG_19_b.FS_TPMCAL_DIV_FRAC_LB_2 = rf_tx_table[TX_TIMING_LB_DIVFRAC2_IDX];
@@ -118,12 +128,9 @@ void _tx_init_fsk(const uint8_t *rf_tx_table, uint8_t power)
 
     //- POWER Table
     //- Enable Constant PWR
-    ANCTL->ANCTL_REG.ANCTL_RAMP_NUM = 0x0F;
+    ANCTL->ANCTL_REG.ANCTL_RAMP_NUM = 0;
     ANCTL->ANCTL_REG.ANCTL_CONFIG_7_1_b.ANCTL_CONST_PWR_EN = 1;
     _patch_power(power);
-
-    //- TX default value
-    ANCTL->ANCTL_REG.ANCTL_CONFIG_3_1_b.ANCTL_TX_RUW4DAT = 0;
 
     //- Setup TX freq/mod
     ANCTL->ANCTL_REG.ANCTL_CONFIG_1_0_b.ANCTL_TX_MOD  = ANCTL_TX_MOD_FSK;
@@ -158,12 +165,14 @@ uint8_t _bit_reverse8(uint8_t v)
     return v;
 }
 
-void wisp_api_tx_manual(uint8_t len, const uint8_t *tx_data, int8_t revs_flag)
+void wisp_api_tx_manual(uint8_t len, const uint8_t *tx_data, int8_t revs_flag, int8_t rep_flag)
 {
-    PCRMU->BLK_CLK_REG_b.MODEM_CLK_EN = 1;
+    static uint8_t pre_count = 0;
 
-    //- Power on Synth engine
-    ANCTL->SX_REG.SX_CONFIG_8_b.FS_FREQSYNTH_PD = 0;
+    //- Disable TX first
+    ANCTL->ANCTL_REG.ANCTL_CONFIG_1_0_b.ANCTL_TX_EN = 0;
+
+    PCRMU->BLK_CLK_REG_b.MODEM_CLK_EN = 1;
 
     if (rf_tx_table[TX_TIMING_BAND_SEL_IDX] == 0) {
         ANA_AON->PAD_XTAL_GPREG_REG.RW_GPREG_ONES_0 &= ~(1 << 3);
@@ -176,10 +185,10 @@ void wisp_api_tx_manual(uint8_t len, const uint8_t *tx_data, int8_t revs_flag)
     ANCTL->SX_REG.SX_CONFIG_19_b.FS_TPMCAL_DIV_INT_HB = rf_tx_table[TX_TIMING_HB_DIVINT_IDX];
     ANCTL->SX_REG.FS_TPMCAL_DIV_FRAC_HB_0 = rf_tx_table[TX_TIMING_HB_DIVFRAC0_IDX];
     ANCTL->SX_REG.FS_TPMCAL_DIV_FRAC_HB_1 = rf_tx_table[TX_TIMING_HB_DIVFRAC1_IDX];
-    ANCTL->SX_REG.FS_TPMCAL_DIV_FRAC_HB_2 = rf_tx_table[TX_TIMING_HB_DIVFRAC2_IDX];
+    ANCTL->SX_REG.SX_CONFIG_16_b.FS_TPMCAL_DIV_FRAC_HB_2 = rf_tx_table[TX_TIMING_HB_DIVFRAC2_IDX];
 
     //- LB Frequency
-    ANCTL->SX_REG.FS_TPMCAL_DIV_INT_LB = rf_tx_table[TX_TIMING_LB_DIVINT_IDX];
+    ANCTL->SX_REG.SX_CONFIG_20_b.FS_TPMCAL_DIV_INT_LB = rf_tx_table[TX_TIMING_LB_DIVINT_IDX];
     ANCTL->SX_REG.FS_TPMCAL_DIV_FRAC_LB_0 = rf_tx_table[TX_TIMING_LB_DIVFRAC0_IDX];
     ANCTL->SX_REG.FS_TPMCAL_DIV_FRAC_LB_1 = rf_tx_table[TX_TIMING_LB_DIVFRAC1_IDX];
     ANCTL->SX_REG.SX_CONFIG_19_b.FS_TPMCAL_DIV_FRAC_LB_2 = rf_tx_table[TX_TIMING_LB_DIVFRAC2_IDX];
@@ -204,7 +213,6 @@ void wisp_api_tx_manual(uint8_t len, const uint8_t *tx_data, int8_t revs_flag)
 
     //- PA parameter
     _patch_power(power_tbl[TX_CONFIG_POWER]);
-    ANCTL->PA_REG.PA_CONFIG_0_b.PA_EN = 1;
     ANCTL->ANCTL_REG.ANCTL_RAMP_NUM = 0x0F;
     ANCTL->ANCTL_REG.ANCTL_CONFIG_7_1_b.ANCTL_CONST_PWR_EN = 1;
 
@@ -222,8 +230,9 @@ void wisp_api_tx_manual(uint8_t len, const uint8_t *tx_data, int8_t revs_flag)
     //- TX default value
     ANCTL->ANCTL_REG.ANCTL_CONFIG_3_1_b.ANCTL_TX_RUW4DAT = 0;
 
-    //- Manual mode
-    ANCTL->ANCTL_REG.ANCTL_CONFIG_0_0_b.ANCTL_SEL_CTL = 0;
+    //- Anctl control mode - auto
+    ANCTL->ANCTL_REG.ANCTL_CONFIG_PD_REG_0 = 0xFF;
+    ANCTL->ANCTL_REG.ANCTL_CONFIG_0_0_b.ANCTL_SEL_CTL = 1;
 
     ANCTL->SX_REG.SX_CONFIG_4_b.FS_CP_ICTRL = 7;
     ANCTL->SX_REG.SX_CONFIG_11_b.FS_LF_BW_MODE = 1;
@@ -232,6 +241,11 @@ void wisp_api_tx_manual(uint8_t len, const uint8_t *tx_data, int8_t revs_flag)
     ANCTL->SX_REG.SX_CONFIG_34_b.FS_VCO_STARTER_CTRL = 0;
 
     volatile uint8_t *ptr = (volatile uint8_t *)&ANCTL->ANCTL_REG.ANCTL_TX_DAT0_0;
+
+    if (len > 16) {
+        len = 16;
+    }
+
     for (int i = 0; i < len; i++) {
         if (revs_flag) {
             ptr[i] = _bit_reverse8(tx_data[i]);
@@ -241,9 +255,21 @@ void wisp_api_tx_manual(uint8_t len, const uint8_t *tx_data, int8_t revs_flag)
        }
     }
 
-    ANCTL->ANCTL_REG.ANCTL_CONFIG_1_2_b.ANCTL_TX_REP = 1;
+    ANCTL->ANCTL_REG.ANCTL_CONFIG_1_2_b.ANCTL_TX_REP = rep_flag ? 1 : 0;
     ANCTL->ANCTL_REG.ANCTL_CONFIG_1_1_b.ANCTL_TX_LEN = (len << 3) - 1;
     ANCTL->ANCTL_REG.ANCTL_CONFIG_1_0_b.ANCTL_TX_EN = 1;
+
+    if (rep_flag == 0) {
+        pre_count = ANCTL->ANCTL_REG.ANCTL_CONFIG_1_3_b.ANCTL_TX_COMPL_CNT;
+
+        _turnoff_fs_tpm_en();
+
+        while(pre_count == ANCTL->ANCTL_REG.ANCTL_CONFIG_1_3_b.ANCTL_TX_COMPL_CNT) {
+            //wait TX done
+        }
+
+        ANCTL->ANCTL_REG.ANCTL_CONFIG_1_0_b.ANCTL_TX_EN = 0;
+    }
 }
 
 void wisp_api_crc_standalone(uint16_t data_len, const uint8_t *data, uint16_t *crc_out)
@@ -300,10 +326,26 @@ void wisp_api_tx_single_tone(uint8_t power_level)
     ANCTL->PA_REG.PA_CONFIG_0_b.PA_EN = 1;
     ANCTL->PA_REG.PA_CONFIG_0_b.PA_EN_RAMP = 0; //single tone must disable it
 
+    //- Anctl control mode - manual
+    ANCTL->ANCTL_REG.ANCTL_CONFIG_PD_REG_0 = 0;
+    ANCTL->ANCTL_REG.ANCTL_CONFIG_0_0_b.ANCTL_SEL_CTL = 0;
+
+    //- Enable TX IQ buffer
+    ANCTL->SX_REG.SX_CONFIG_31_b.FS_TX_EN = 1;
+
     ANCTL->ANCTL_REG.ANCTL_CONFIG_1_0_b.ANCTL_TX_EN = 1;
     ANCTL->ANCTL_REG.ANCTL_CONFIG_1_2_b.ANCTL_TX_REP = 1;
     ANCTL->ANCTL_REG.ANCTL_CONFIG_1_3_b.ANCTL_SINGLE_EN = 1;
-    ANCTL->SX_REG.SX_CONFIG_31_b.FS_TX_EN = 1;
+}
+
+void wisp_api_tx_single_tone_off(void)
+{
+    //- Power off Synth engine
+    ANCTL->SX_REG.SX_CONFIG_8_b.FS_FREQSYNTH_PD = 1;
+
+    ANCTL->ANCTL_REG.ANCTL_CONFIG_1_2_b.ANCTL_TX_REP = 0;
+    ANCTL->ANCTL_REG.ANCTL_CONFIG_1_3_b.ANCTL_SINGLE_EN = 0;
+    ANCTL->ANCTL_REG.ANCTL_CONFIG_1_0_b.ANCTL_TX_EN = 0;
 }
 
 #endif

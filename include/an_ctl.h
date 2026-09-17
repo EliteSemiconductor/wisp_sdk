@@ -252,16 +252,38 @@ typedef struct {
   };
   __I  uint8_t  RESERVED_14[2];
   union {
-    __IO uint8_t   ANCTL_WB_REG0_3;
-    struct {
-      __IO uint8_t   ANCTL_DIS_TPM_CAL_EN_WB   :  1;
-      __IO uint8_t                             :  1;
-      __IO uint8_t   ANCTL_DIS_TPM_TEST_MODE_WB:  1;
-    } ANCTL_WB_REG0_3_b;
+      __IO uint8_t ANCTL_WB_REG0_3;
+      struct {
+          __IO uint8_t ANCTL_DIS_TPM_CAL_EN_WB    : 1;
+          __IO uint8_t                            : 1;
+          __IO uint8_t ANCTL_DIS_TPM_TEST_MODE_WB : 1;
+          __IO uint8_t                            : 5;
+      } ANCTL_WB_REG0_3_b;
   };
-  __I  uint8_t   RESERVED_15[136];
+  __I uint8_t RESERVED_15[12];
+  union {
+      __IO uint8_t ANCTL_ANA_LAT_REG0;
+      struct {
+          __IO uint8_t ANCTL_ANA_LAT_SRC : 4;
+          __IO uint8_t                   : 4;
+      } ANCTL_ANA_LAT_REG0_b;
+  };
+  __I uint8_t RESERVED_16[3];
+  union {
+      __O uint8_t ANCTL_ANA_LAT_REG1;
+      struct {
+          __O uint8_t W1T_ANA_LAT : 1;
+          __O uint8_t             : 7;
+      } ANCTL_ANA_LAT_REG1_b;
+  };
+  __I uint8_t RESERVED_17[3];
+  __I uint8_t ANCTL_CUR_ANA_LAT_0;
+  __I uint8_t ANCTL_CUR_ANA_LAT_1;
+  __I uint8_t ANCTL_CUR_ANA_LAT_2;
+  __I uint8_t ANCTL_CUR_ANA_LAT_3;
+  __I uint8_t RESERVED_18[112];
   __I  uint8_t   ANCTL_CUR_ST;
-  __I  uint8_t   RESERVED_16[3];
+  __I  uint8_t   RESERVED_19[3];
   __IO uint8_t   ANCTL_PWR01;
   __IO uint8_t   ANCTL_PWR02;
   __IO uint8_t   ANCTL_PWR03;
@@ -326,7 +348,7 @@ typedef struct {
   __IO uint8_t   ANCTL_PWR62;
   __IO uint8_t   ANCTL_PWR63;
   __IO uint8_t   ANCTL_PWR64;
-  __I  uint8_t   RESERVED_17[64];
+  __I  uint8_t   RESERVED_20[64];
 
 } ANCTLD_T;
 
@@ -404,6 +426,7 @@ typedef struct {
     struct {
       __IO uint8_t   ASARADC_VIN_MUX_SEL    :  3;
       __IO uint8_t   ASARADC_DAF_AVG_SHIFT_N:  4;
+      __IO uint8_t                          :  1;
     } ASARADC_CONFIG_4_b;
   };
   union {
@@ -411,61 +434,98 @@ typedef struct {
     struct {
       __IO uint8_t   ASARADC_DAF_EN        :  1;
       __IO uint8_t   ASARADC_DAF_AUTORST_EN:  1;
+      __IO uint8_t                         :  6;
     } ASARADC_CONFIG_5_b;
   };
   union {
-    __I  uint8_t   ASARADC_CONFIG_6;
+    __I uint8_t   ASARADC_CONFIG_6;
     struct {
-      __I  uint8_t   ASARADC_TIMING_GOOD:  1;
-      __I  uint8_t   ASARADC_DOUT_0     :  1;
+      __I uint8_t   ASARADC_TIMING_GOOD:  1;
+      __I uint8_t   ASARADC_DOUT_0     :  7;
     } ASARADC_CONFIG_6_b;
   };
   union {
-    __I  uint8_t   ASARADC_CONFIG_7;
+    __I uint8_t   ASARADC_CONFIG_7;
     struct {
-      __I  uint8_t   ASARADC_DOUT_1    :  1;
-      __I  uint8_t   ASARADC_HR_RDOUT_0:  1;
+      __I uint8_t   ASARADC_DOUT_1    :  5;
+      __I uint8_t   ASARADC_HR_RDOUT_0:  3;
     } ASARADC_CONFIG_7_b;
   };
-  __I  uint8_t   ASARADC_HR_RDOUT_1;
-  __I  uint8_t   ASARADC_HR_RDOUT_2;
-  __I  uint8_t   ASARADC_HR_RDOUT_3;
-  __I  uint8_t   RESERVED_1[38];
+  __I uint8_t   ASARADC_HR_RDOUT_1;
+  __I uint8_t   ASARADC_HR_RDOUT_2;
+  __I uint8_t   ASARADC_HR_RDOUT_3;
+  __I uint8_t   RESERVED_1[38];
   union {
     __IO uint8_t   ASARADC_CONFIG_13;
     struct {
       __IO uint8_t   ASARADC_START:  1;
-      __IO uint8_t   ASARADC_READY:  1;
+      __I  uint8_t   ASARADC_READY:  1;
+      __I  uint8_t                :  6;
     } ASARADC_CONFIG_13_b;
   };
-  __I  uint8_t   RESERVED_2[3];
-  __I  uint8_t   ASARADC_DATA_0;
-  __I  uint8_t   ASARADC_DATA_1;
-  __I  uint8_t   RESERVED_3[2];
-  __I  uint8_t   ASARADC_HR_DATA_0;
-  __I  uint8_t   ASARADC_HR_DATA_1;
-  __I  uint8_t   ASARADC_HR_DATA_2;
-  __I  uint8_t   ASARADC_HR_DATA_3;
-  __IO uint8_t   ASARADC_VIN_MUX_SEL_SET;
-  __I  uint8_t   RESERVED_4[3];
-  __IO uint8_t   INT_ST_READY;
-  __I  uint8_t   RESERVED_5[3];
-  __IO uint8_t   INT_EN_READY;
-  __I  uint8_t   RESERVED_6[3];
-  __I  uint8_t   INT_READY;
-  __I  uint8_t   RESERVED_7[7];
+  __I uint8_t   RESERVED_2[3];
+  __I uint8_t   ASARADC_DATA_0;
+  union {
+    __I uint8_t   ASARADC_DATA_1;
+    struct {
+      __I uint8_t   ASARADC_DATA_1_VALUE:  4;
+      __I uint8_t                       :  4;
+    } ASARADC_CONFIG_14_1_b;
+  };
+  __I uint8_t   RESERVED_3[2];
+  __I uint8_t   ASARADC_HR_DATA_0;
+  __I uint8_t   ASARADC_HR_DATA_1;
+  __I uint8_t   ASARADC_HR_DATA_2;
+  union {
+    __I uint8_t   ASARADC_HR_DATA_3;
+    struct {
+      __I uint8_t   ASARADC_HR_DATA_3_VALUE:  3;
+      __I uint8_t                          :  5;
+    } ASARADC_CONFIG_15_3_b;
+  };
+  union {
+    __IO uint8_t   ASARADC_CONFIG_16;
+    struct {
+      __IO uint8_t   ASARADC_VIN_MUX_SEL_SET:  4;
+      __IO uint8_t                          :  4;
+    } ASARADC_CONFIG_16_b;
+  };
+  __I uint8_t   RESERVED_4[3];
+  union {
+    __IO uint8_t   ASARADC_INT_ST;
+    struct {
+      __IO uint8_t   INT_ST_READY:  1;
+      __IO uint8_t               :  7;
+    } ASARADC_INT_ST_b;
+  };
+  __I uint8_t   RESERVED_5[3];
+  union {
+    __IO uint8_t   ASARADC_INT_EN;
+    struct {
+      __IO uint8_t   INT_EN_READY:  1;
+      __IO uint8_t               :  7;
+    } ASARADC_INT_EN_b;
+  };
+  __I uint8_t   RESERVED_6[3];
+  union {
+    __I uint8_t   ASARADC_INT;
+    struct {
+      __I uint8_t   INT_READY:  1;
+      __I uint8_t            :  7;
+    } ASARADC_INT_b;
+  };
+  __I uint8_t   RESERVED_7[7];
   union {
     __IO uint8_t   ASARADC_CONFIG_17;
     struct {
       __IO uint8_t   FETCH_MODE  :  1;
       __IO uint8_t   TIMER_MODE_1:  2;
       __IO uint8_t   TIMER_MODE_2:  2;
+      __IO uint8_t               :  3;
     } ASARADC_CONFIG_17_b;
   };
-  __I  uint8_t   RESERVED_8[47];
-
+  __I uint8_t   RESERVED_8[47];
 } ASARADC_T;
-
 
 //-----------------------------------------------------//
 typedef struct {
@@ -486,6 +546,7 @@ typedef struct {
       __IO uint8_t   FS_ANG_LDO_PD    :  1;
       __IO uint8_t   FS_AUTOLBW_EN    :  1;
       __IO uint8_t   FS_CP_ICTRL      :  3;
+      __IO uint8_t   RESERVED         :  2;
     } SX_CONFIG_4_b;
   };
   union {
@@ -521,15 +582,23 @@ typedef struct {
       __IO uint8_t   FS_HF_LDO_BYP_EN:  1;
       __IO uint8_t   FS_HF_LDO_PD    :  1;
       __IO uint8_t   FS_IQBUF_ICTRL  :  3;
+      __IO uint8_t   RESERVED        :  3;
     } SX_CONFIG_9_b;
   };
-  __IO uint8_t   FS_IQGEN_LATCH_ICTRL;
+  union {
+    __IO uint8_t   SX_CONFIG_10;
+    struct {
+      __IO uint8_t   FS_IQGEN_LATCH_ICTRL:  4;
+      __IO uint8_t   RESERVED            :  4;
+    } SX_CONFIG_10_b;
+  };
   union {
     __IO uint8_t   SX_CONFIG_11;
     struct {
       __IO uint8_t   FS_KVC_IN    :  5;
       __IO uint8_t   FS_LDO_SUPEN :  1;
       __IO uint8_t   FS_LF_BW_MODE:  1;
+      __IO uint8_t   RESERVED     :  1;
     } SX_CONFIG_11_b;
   };
   union {
@@ -538,6 +607,7 @@ typedef struct {
       __IO uint8_t   FS_OPT_VTUNE_SEL:  3;
       __IO uint8_t   FS_PFD_RST_DLY  :  2;
       __IO uint8_t   FS_PVT_CAL_EN   :  1;
+      __IO uint8_t   RESERVED        :  2;
     } SX_CONFIG_12_b;
   };
   union {
@@ -545,11 +615,18 @@ typedef struct {
     struct {
       __IO uint8_t   FS_PVT_KVC_TARGET        :  5;
       __IO uint8_t   FS_TPMCAL_AVG_SAMPLES_SEL:  2;
+      __IO uint8_t   RESERVED                 :  1;
     } SX_CONFIG_13_b;
   };
   __IO uint8_t   FS_TPMCAL_DIV_FRAC_HB_0;
   __IO uint8_t   FS_TPMCAL_DIV_FRAC_HB_1;
-  __IO uint8_t   FS_TPMCAL_DIV_FRAC_HB_2;
+  union {
+    __IO uint8_t   SX_CONFIG_16;
+    struct {
+      __IO uint8_t   FS_TPMCAL_DIV_FRAC_HB_2:  2;
+      __IO uint8_t   RESERVED               :  6;
+    } SX_CONFIG_16_b;
+  };
   __IO uint8_t   FS_TPMCAL_DIV_FRAC_LB_0;
   __IO uint8_t   FS_TPMCAL_DIV_FRAC_LB_1;
   union {
@@ -557,9 +634,16 @@ typedef struct {
     struct {
       __IO uint8_t   FS_TPMCAL_DIV_FRAC_LB_2:  2;
       __IO uint8_t   FS_TPMCAL_DIV_INT_HB   :  5;
+      __IO uint8_t   RESERVED               :  1;
     } SX_CONFIG_19_b;
   };
-  __IO uint8_t   FS_TPMCAL_DIV_INT_LB;
+  union {
+    __IO uint8_t   SX_CONFIG_20;
+    struct {
+      __IO uint8_t   FS_TPMCAL_DIV_INT_LB:  5;
+      __IO uint8_t   RESERVED            :  3;
+    } SX_CONFIG_20_b;
+  };
   union {
     __IO uint8_t   SX_CONFIG_21;
     struct {
@@ -568,10 +652,28 @@ typedef struct {
       __IO uint8_t   FS_TPMCAL_SEQUENTIAL_COUNTS_0:  6;
     } SX_CONFIG_21_b;
   };
-  __IO uint8_t   FS_TPMCAL_SEQUENTIAL_COUNTS_1;
-  __IO uint8_t   FS_TPMCAL_SETTLING_CYCLES;
+  union {
+    __IO uint8_t   SX_CONFIG_22;
+    struct {
+      __IO uint8_t   FS_TPMCAL_SEQUENTIAL_COUNTS_1:  6;
+      __IO uint8_t   RESERVED                     :  2;
+    } SX_CONFIG_22_b;
+  };
+  union {
+    __IO uint8_t   SX_CONFIG_23;
+    struct {
+      __IO uint8_t   FS_TPMCAL_SETTLING_CYCLES:  7;
+      __IO uint8_t   RESERVED                 :  1;
+    } SX_CONFIG_23_b;
+  };
   __IO uint8_t   FS_TPMCAL_TPM_DIN_HB_0;
-  __IO uint8_t   FS_TPMCAL_TPM_DIN_HB_1;
+  union {
+    __IO uint8_t   SX_CONFIG_25;
+    struct {
+      __IO uint8_t   FS_TPMCAL_TPM_DIN_HB_1:  4;
+      __IO uint8_t   RESERVED              :  4;
+    } SX_CONFIG_25_b;
+  };
   __IO uint8_t   FS_TPMCAL_TPM_DIN_LB_0;
   union {
     __IO uint8_t   SX_CONFIG_27;
@@ -586,6 +688,7 @@ typedef struct {
       __IO uint8_t   FS_TPM_CAPARRAY_CTRL :  3;
       __IO uint8_t   FS_TPM_CLK_INVMODE_EN:  1;
       __IO uint8_t   FS_TPM_CLK_LF_MODE   :  1;
+      __IO uint8_t   RESERVED             :  3;
     } SX_CONFIG_28_b;
   };
   __IO uint8_t   FS_TPM_DIN_0;
@@ -609,12 +712,19 @@ typedef struct {
       __IO uint8_t   FS_TX_EN               :  1;
     } SX_CONFIG_31_b;
   };
-  __IO uint8_t   FS_VCO_BUF_ICTRL;
+  union {
+    __IO uint8_t   SX_CONFIG_32;
+    struct {
+      __IO uint8_t   FS_VCO_BUF_ICTRL:  4;
+      __IO uint8_t   RESERVED        :  4;
+    } SX_CONFIG_32_b;
+  };
   union {
     __IO uint8_t   SX_CONFIG_33;
     struct {
       __IO uint8_t   FS_VCO_ICTRL     :  5;
       __IO uint8_t   FS_VCO_LDO_BYP_EN:  1;
+      __IO uint8_t   RESERVED         :  2;
     } SX_CONFIG_33_b;
   };
   union {
@@ -631,25 +741,34 @@ typedef struct {
     struct {
       __IO uint8_t   FS_VTUNEDET_VL  :  3;
       __IO uint8_t   FS_VTUNEPROBE_EN:  1;
+      __IO uint8_t   RESERVED        :  4;
     } SX_CONFIG_35_b;
   };
   union {
-    __I  uint8_t   SX_CONFIG_36;
+    __I uint8_t   SX_CONFIG_36;
     struct {
-      __I  uint8_t   FS_KVC_ROUT      :  1;
-      __I  uint8_t   FS_PLL_LOCKED_SIG:  1;
-      __I  uint8_t   FS_TPMCAL_DONE   :  1;
+      __I uint8_t   FS_KVC_ROUT      :  5;
+      __I uint8_t   FS_PLL_LOCKED_SIG:  1;
+      __I uint8_t   FS_TPMCAL_DONE   :  1;
+      __I uint8_t   RESERVED         :  1;
     } SX_CONFIG_36_b;
   };
-  __I  uint8_t   FS_TPMCAL_TPM_DIN_HB_OUT_0;
+  __I uint8_t   FS_TPMCAL_TPM_DIN_HB_OUT_0;
   union {
-    __I  uint8_t   SX_CONFIG_38;
+    __I uint8_t   SX_CONFIG_38;
     struct {
-      __I  uint8_t   FS_TPMCAL_TPM_DIN_HB_OUT_1:  1;
-      __I  uint8_t   FS_PVT_CAL_DONE           :  1;
+      __I uint8_t   FS_TPMCAL_TPM_DIN_HB_OUT_1:  4;
+      __I uint8_t   FS_PVT_CAL_DONE           :  1;
+      __I uint8_t   RESERVED                  :  3;
     } SX_CONFIG_38_b;
   };
-  __I  uint8_t   FS_INNER_VCO_ICTRL_ROUT;
+  union {
+    __I uint8_t   SX_CONFIG_39;
+    struct {
+      __I uint8_t   FS_INNER_VCO_ICTRL_ROUT:  5;
+      __I uint8_t   RESERVED               :  3;
+    } SX_CONFIG_39_b;
+  };
   __IO uint8_t   TPM_DMI_FS_PARM_0;
   __IO uint8_t   TPM_DMI_FS_PARM_1;
   union {
@@ -666,23 +785,58 @@ typedef struct {
       __IO uint8_t   TPM_DMI_SINGLE_BIT_MODE:  1;
       __IO uint8_t   TPM_DMI_CLK_PHASE      :  1;
       __IO uint8_t   TPM_DMI_EN             :  1;
+      __IO uint8_t   RESERVED               :  4;
     } TPM_DMI_CONFIG_4_b;
   };
   __IO uint8_t   FS_TPMCAL_DIV_FRAC_HB_M_0;
   __IO uint8_t   FS_TPMCAL_DIV_FRAC_HB_M_1;
-  __IO uint8_t   FS_TPMCAL_DIV_FRAC_HB_M_2;
+  union {
+    __IO uint8_t   TPM_DMI_CONFIG_7;
+    struct {
+      __IO uint8_t   FS_TPMCAL_DIV_FRAC_HB_M_2:  2;
+      __IO uint8_t   RESERVED                 :  6;
+    } TPM_DMI_CONFIG_7_b;
+  };
   __IO uint8_t   FS_TPMCAL_DIV_FRAC_LB_M_0;
   __IO uint8_t   FS_TPMCAL_DIV_FRAC_LB_M_1;
-  __IO uint8_t   FS_TPMCAL_DIV_FRAC_LB_M_2;
-  __IO uint8_t   FS_TPMCAL_DIV_INT_HB_M;
-  __IO uint8_t   FS_TPMCAL_DIV_INT_LB_M;
+  union {
+    __IO uint8_t   TPM_DMI_CONFIG_10;
+    struct {
+      __IO uint8_t   FS_TPMCAL_DIV_FRAC_LB_M_2:  2;
+      __IO uint8_t   RESERVED                 :  6;
+    } TPM_DMI_CONFIG_10_b;
+  };
+  union {
+    __IO uint8_t   TPM_DMI_CONFIG_11;
+    struct {
+      __IO uint8_t   FS_TPMCAL_DIV_INT_HB_M:  5;
+      __IO uint8_t   RESERVED              :  3;
+    } TPM_DMI_CONFIG_11_b;
+  };
+  union {
+    __IO uint8_t   TPM_DMI_CONFIG_12;
+    struct {
+      __IO uint8_t   FS_TPMCAL_DIV_INT_LB_M:  5;
+      __IO uint8_t   RESERVED              :  3;
+    } TPM_DMI_CONFIG_12_b;
+  };
   __IO uint8_t   FS_TPMCAL_TPM_DIN_HB_M_0;
-  __IO uint8_t   FS_TPMCAL_TPM_DIN_HB_M_1;
+  union {
+    __IO uint8_t   TPM_DMI_CONFIG_14;
+    struct {
+      __IO uint8_t   FS_TPMCAL_TPM_DIN_HB_M_1:  4;
+      __IO uint8_t   RESERVED                :  4;
+    } TPM_DMI_CONFIG_14_b;
+  };
   __IO uint8_t   FS_TPMCAL_TPM_DIN_LB_M_0;
-  __IO uint8_t   FS_TPMCAL_TPM_DIN_LB_M_1;
-
-  __I  uint8_t   RESERVED_1[73];
-
+  union {
+    __IO uint8_t   TPM_DMI_CONFIG_16;
+    struct {
+      __IO uint8_t   FS_TPMCAL_TPM_DIN_LB_M_1:  4;
+      __IO uint8_t   RESERVED                :  4;
+    } TPM_DMI_CONFIG_16_b;
+  };
+  __I uint8_t RESERVED_1[73];
 } SX_T;
 
 //-----------------------------------------------------//
