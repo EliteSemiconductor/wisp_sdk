@@ -5,6 +5,9 @@
 #include "transfer.h"
 #include "api_translate.h"
 
+#define TX_NONE_BLOCKED     0
+#define TX_BLOCKED          1
+
 /**
  * void wisp_api_uart_open(uint32_t baudrate)
  * @brief Initialize UART with the specified baudrate.

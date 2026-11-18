@@ -326,6 +326,8 @@ void wisp_api_tx_single_tone(uint8_t power_level)
     ANCTL->PA_REG.PA_CONFIG_0_b.PA_EN = 1;
     ANCTL->PA_REG.PA_CONFIG_0_b.PA_EN_RAMP = 0; //single tone must disable it
 
+    ANCTL->SX_REG.SX_CONFIG_4_b.FS_CP_ICTRL = 7;// Reduce sideband noise around the main tone
+
     //- Anctl control mode - manual
     ANCTL->ANCTL_REG.ANCTL_CONFIG_PD_REG_0 = 0;
     ANCTL->ANCTL_REG.ANCTL_CONFIG_0_0_b.ANCTL_SEL_CTL = 0;
